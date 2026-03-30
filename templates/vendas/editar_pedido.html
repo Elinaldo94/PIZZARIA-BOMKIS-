@@ -1,0 +1,68 @@
+{% extends 'home/base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow">
+      <div class="card-header bg-warning text-dark">
+        <h4 class="mb-0">Alterar Detalhes do Pedido #{{ pedido.id }}</h4>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">
+              Método de Pagamento Atual:
+              <strong>{{ pedido.metodo_pagamento|upper }}</strong>
+            </label>
+            <select name="metodo_pagamento" class="form-select" required>
+              <option
+                value="pix"
+                {%
+                if
+                pedido.metodo_pagamento=""
+                ="pix"
+                %}selected{%
+                endif
+                %}
+              >
+                PIX
+              </option>
+              <option
+                value="cartao"
+                {%
+                if
+                pedido.metodo_pagamento=""
+                ="cartao"
+                %}selected{%
+                endif
+                %}
+              >
+                Cartão
+              </option>
+              <option
+                value="dinheiro"
+                {%
+                if
+                pedido.metodo_pagamento=""
+                ="dinheiro"
+                %}selected{%
+                endif
+                %}
+              >
+                Dinheiro
+              </option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'home_cliente' %}" class="btn btn-secondary"
+              >Voltar</a
+            >
+            <button type="submit" class="btn btn-success">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

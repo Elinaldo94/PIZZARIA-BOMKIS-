@@ -1,0 +1,77 @@
+{% extends 'home/base.html' %} {% block title %}Dashboard Gerencial - Bomkisó{%
+endblock %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2 text-danger">📊 Indicadores de Gestão</h1>
+</div>
+
+<div class="row text-center mb-4">
+  <div class="col-md-4 mb-3">
+    <div class="card bg-danger text-white shadow">
+      <div class="card-body">
+        <h5 class="card-title">Total de Pedidos</h5>
+        <h2 class="display-4 fw-bold">{{ total_pedidos }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8 mb-3">
+    <div class="card shadow">
+      <div class="card-body">
+        <h5 class="card-title border-bottom pb-2">Status dos Pedidos Atual</h5>
+        <div class="d-flex justify-content-around mt-3">
+          {% for item in resumo_status %}
+          <div>
+            <span class="badge bg-secondary p-2">{{ item.status|upper }}</span>
+            <h4 class="mt-2">{{ item.total }}</h4>
+          </div>
+          {% empty %}
+          <p class="text-muted">Nenhum pedido registrado hoje.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow mb-4">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">
+          🔥 Ranking: Pizzas Mais Vendidas (Diferencial Estratégico)
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Sabor</th>
+              <th>Categoria</th>
+              <th class="text-center">Qtd. Pedidos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pizza in pizzas_populares %}
+            <tr>
+              <td><strong>{{ pizza.nome }}</strong></td>
+              <td>{{ pizza.categoria.nome }}</td>
+              <td class="text-center">
+                <span class="badge bg-success">{{ pizza.qtd_vendas }}</span>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center">
+                Nenhum dado de venda disponível.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

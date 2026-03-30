@@ -1,0 +1,87 @@
+{% extends 'home/base.html' %} {% block content %}
+<div
+  class="row justify-content-center align-items-center"
+  style="min-height: 80vh"
+>
+  <div class="col-md-5">
+    <div class="card shadow-lg border-0">
+      <div class="card-header bg-success text-white text-center py-3">
+        <h4 class="mb-0">Criar Nova Conta</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST">
+          {% csrf_token %}
+
+          <h6 class="text-muted border-bottom pb-2 mb-3">
+            Informações de Acesso
+          </h6>
+          <div class="mb-3">
+            <label for="username" class="form-label">Usuário:</label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              class="form-control"
+              placeholder="Escolha um nome de usuário"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Senha:</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="form-control"
+              placeholder="Crie uma senha forte"
+              required
+            />
+          </div>
+
+          <h6 class="text-muted border-bottom pb-2 mb-3 mt-4">
+            Dados de Entrega
+          </h6>
+          <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone:</label>
+            <input
+              type="text"
+              name="telefone"
+              id="telefone"
+              class="form-control"
+              placeholder="(00) 00000-0000"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="endereco" class="form-label">Endereço Completo:</label>
+            <textarea
+              name="endereco"
+              id="endereco"
+              class="form-control"
+              rows="2"
+              placeholder="Rua, Número, Bairro e Complemento"
+              required
+            ></textarea>
+          </div>
+
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-success btn-lg fw-bold">
+              Cadastrar e Pedir 🍕
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer text-center bg-white py-3">
+        <p class="mb-0 text-muted">
+          Já tem uma conta?
+          <a
+            href="{% url 'login' %}"
+            class="text-success fw-bold text-decoration-none"
+            >Faça login aqui</a
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
