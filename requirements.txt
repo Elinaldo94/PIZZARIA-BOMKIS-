@@ -27,7 +27,6 @@ pillow==11.2.1
 prompt_toolkit==3.0.52
 pure_eval==0.2.3
 pycryptodome==3.21.0
-pygame==2.6.1
 Pygments==2.19.2
 PyJWT==2.12.1
 reportlab==4.4.1
