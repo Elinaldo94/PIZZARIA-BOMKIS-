@@ -1,8 +1,9 @@
 from django.db import models
-from vendas.models import Pizza, Cliente
+from django.utils import timezone
+from datetime import timedelta
 
 class Pedido(models.Model):
-    # Status atualizados para incluir o fluxo de entrega (Logística)
+    # DEFINA AS ESCOLHAS ANTES DE USÁ-LAS NOS CAMPOS
     STATUS_CHOICES = [
         ('recebido', 'Recebido'),
         ('preparo', 'Em preparo'),
@@ -19,36 +20,36 @@ class Pedido(models.Model):
         ('pix', 'PIX'),
         ('online', 'Pagamento Online'),
     ]
+
+    ORIGEM_CHOICES = [
+        ('online', 'Online'), 
+        ('telefone', 'Telefone')
+    ]
     
-    # Vinculação com Cliente (Cadastro) ou Nome Avulso (Telefone)
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, null=True, blank=True)
-    cliente_nome_avulso = models.CharField(
-        max_length=100, 
-        blank=True, 
-        help_text="Para pedidos por telefone sem cadastro"
-    )
+    # CAMPOS DO MODELO
+    cliente = models.ForeignKey('vendas.Cliente', on_delete=models.CASCADE, null=True, blank=True)
+    cliente_nome_avulso = models.CharField(max_length=100, blank=True)
+    pizzas = models.ManyToManyField('vendas.Pizza', related_name='pedido')
     
-    pizzas = models.ManyToManyField(Pizza)
+    horario_pedido = models.DateTimeField(auto_now_add=True)
+    horario_retirada_agendada = models.DateTimeField()
     
-    # Datas e Horários (Rastreabilidade de TSI)
-    horario_pedido = models.DateTimeField(auto_now_add=True, verbose_name="Hora da Compra")
-    horario_retirada_agendada = models.DateTimeField(verbose_name="Previsão de Entrega/Retirada")
-    ultima_atualizacao = models.DateTimeField(auto_now=True)
-    
-    # Controle Operacional
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='recebido')
     metodo_pagamento = models.CharField(max_length=20, choices=PAGAMENTO_CHOICES, default='online')
-    prioridade = models.BooleanField(default=False, help_text="Marque para pedidos prioritários (ex: Telefone)")
-    
+    origem = models.CharField(max_length=10, choices=ORIGEM_CHOICES, default='online')
+    pago = models.BooleanField(default=False)
+    prioridade = models.BooleanField(default=False)
+
     def __str__(self):
-        identificacao = self.cliente if self.cliente else self.cliente_nome_avulso
-        return f"Pedido #{self.id} - {identificacao}"
+        return f"Pedido #{self.id}"
 
 class Fornada(models.Model):
-    pedidos = models.ManyToManyField(Pedido)
+    pedidos = models.ManyToManyField(Pedido, related_name='fornadas')
     inicio_forno = models.DateTimeField(auto_now_add=True)
-    capacidade_maxima = models.IntegerField(default=9)
+    previsao_conclusao = models.DateTimeField(blank=True, null=True)
     concluida = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Fornada {self.id} - Início: {self.inicio_forno.strftime('%H:%M')}"
+    def save(self, *args, **kwargs):
+        if not self.previsao_conclusao:
+            self.previsao_conclusao = timezone.now() + timedelta(minutes=15)
+        super().save(*args, **kwargs)

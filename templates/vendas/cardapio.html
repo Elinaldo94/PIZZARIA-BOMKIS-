@@ -1,0 +1,126 @@
+{% extends 'home/base.html' %} {% load static %} {% block title %}Cardápio
+Digital - Pizzaria Bomkisó{% endblock %} {% block content %}
+<div
+  class="pt-3 pb-2 mb-4 border-bottom text-center animate__animated animate__fadeInDown"
+>
+  <h1 class="display-5 fw-bold text-danger">🍕 Nosso Cardápio</h1>
+  <p class="text-muted">Escolha sua favorita e peça agora mesmo!</p>
+</div>
+
+<div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
+  <a
+    href="{% url 'api_cardapio' %}"
+    class="btn btn-outline-danger rounded-pill px-4 active shadow-sm"
+    >Todas</a
+  >
+  {% for categoria in categorias %}
+  <a
+    href="?categoria={{ categoria.slug }}"
+    class="btn btn-outline-secondary rounded-pill px-4 shadow-sm"
+  >
+    {{ categoria.nome }}
+  </a>
+  {% endfor %}
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for pizza in pizzas %}
+  <div class="col animate__animated animate__fadeInUp">
+    <div
+      class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden pizza-card"
+    >
+      <div class="position-relative">
+        {% if pizza.imagem %}
+        <img
+          src="{{ pizza.imagem.url }}"
+          class="card-img-top"
+          alt="{{ pizza.nome }}"
+          style="height: 200px; object-fit: cover"
+        />
+        {% else %}
+        <div
+          class="bg-light d-flex align-items-center justify-content-center"
+          style="height: 200px"
+        >
+          <i class="bi bi-card-image text-muted display-4"></i>
+        </div>
+        {% endif %}
+        <span
+          class="position-absolute top-0 end-0 m-3 badge bg-danger rounded-pill shadow-sm"
+        >
+          {{ pizza.categoria.nome }}
+        </span>
+      </div>
+
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title fw-bold text-dark mb-2">{{ pizza.nome }}</h5>
+        <p class="card-text text-muted small mb-3 flex-grow-1">
+          {{ pizza.ingredientes }}
+        </p>
+
+        <div class="bg-light p-2 rounded-3 mb-3 border">
+          <div class="d-flex justify-content-between small px-2">
+            <span
+              >P:
+              <strong class="text-danger">R$ {{ pizza.preco_p }}</strong></span
+            >
+            <span
+              >M:
+              <strong class="text-danger">R$ {{ pizza.preco_m }}</strong></span
+            >
+            <span
+              >G:
+              <strong class="text-danger">R$ {{ pizza.preco_g }}</strong></span
+            >
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <button
+            class="btn btn-danger fw-bold rounded-3 btn-pedir shadow-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#novoPedidoModal"
+            data-id="{{ pizza.id }}"
+            data-nome="{{ pizza.nome }}"
+          >
+            <i class="bi bi-cart-plus me-2"></i>Pedir Agora
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 text-center py-5">
+    <i class="bi bi-emoji-frown display-1 text-muted"></i>
+    <h4 class="text-muted mt-3">
+      Ops! Nenhuma pizza disponível nesta categoria.
+    </h4>
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+  .pizza-card {
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .pizza-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12) !important;
+  }
+  .btn-pedir {
+    transition: transform 0.2s;
+  }
+  .btn-pedir:active {
+    transform: scale(0.95);
+  }
+  .btn-outline-danger.active {
+    background-color: #dc3545;
+    color: white;
+  }
+</style>
+
+{% endblock %} {% block extra_js %}
+<script src="{% static 'scripts/pedidos.js' %}"></script>
+{% endblock %}

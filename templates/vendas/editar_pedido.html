@@ -1,18 +1,18 @@
-{% extends 'home/base.html' %} {% block content %}
+{% extends 'home/base.html' %} {% block title %}Editar Pedido #{{ pedido.id }}{%
+endblock %} {% block content %}
 <div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card shadow">
-      <div class="card-header bg-warning text-dark">
-        <h4 class="mb-0">Alterar Detalhes do Pedido #{{ pedido.id }}</h4>
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-lg">
+      <div class="card-header bg-danger text-white">
+        <h4 class="mb-0 text-center">✏️ Ajustar Pedido #{{ pedido.id }}</h4>
       </div>
       <div class="card-body">
         <form method="POST">
           {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label">
-              Método de Pagamento Atual:
-              <strong>{{ pedido.metodo_pagamento|upper }}</strong>
-            </label>
+
+          <div class="mb-4">
+            <label class="form-label">Método de Pagamento</label>
+            <!-- CORRIGIDO: Sintaxe limpa de comparação do Django (==) sem aspas soltas -->
             <select name="metodo_pagamento" class="form-select" required>
               <option
                 value="pix"
@@ -24,19 +24,31 @@
                 endif
                 %}
               >
-                PIX
+                PIX (Online)
               </option>
               <option
-                value="cartao"
+                value="online"
                 {%
                 if
                 pedido.metodo_pagamento=""
-                ="cartao"
+                ="online"
                 %}selected{%
                 endif
                 %}
               >
-                Cartão
+                Pagamento Online
+              </option>
+              <option
+                value="cartao_entrega"
+                {%
+                if
+                pedido.metodo_pagamento=""
+                ="cartao_entrega"
+                %}selected{%
+                endif
+                %}
+              >
+                Cartão na Entrega
               </option>
               <option
                 value="dinheiro"
@@ -48,16 +60,35 @@
                 endif
                 %}
               >
-                Dinheiro
+                Dinheiro na Retirada
               </option>
             </select>
           </div>
-          <div class="d-flex justify-content-between">
-            <a href="{% url 'home_cliente' %}" class="btn btn-secondary"
-              >Voltar</a
+
+          <div class="mb-4">
+            <label class="form-label">Novo Horário para Retirada</label>
+            <input
+              type="time"
+              name="horario_retirada"
+              class="form-control"
+              value="{{ pedido.horario_retirada_agendada|time:'H:i' }}"
+            />
+            <small class="text-muted">
+              Previsão inicial: {{ pedido.horario_retirada_agendada|time:"H:i"
+              }}
+            </small>
+          </div>
+
+          <div class="alert">
+            Só é possível editar pedidos com status <strong>"Recebido"</strong>.
+          </div>
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'home_cliente' %}" class="btn btn-light"
+              >Cancelar</a
             >
-            <button type="submit" class="btn btn-success">
-              Salvar Alterações
+            <button type="submit" class="btn btn-danger">
+              Atualizar Pedido
             </button>
           </div>
         </form>

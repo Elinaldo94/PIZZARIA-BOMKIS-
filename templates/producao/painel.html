@@ -1,0 +1,56 @@
+{% extends 'home/base.html' %}
+{% load static %}
+
+{% block title %}Painel de Produção - Cozinha Bomkisó{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+      <h2 class="text-dark fw-bold">👨‍🍳 Fila de Produção</h2>
+      <p class="text-muted small">Gerencie pedidos e monitore o tempo de forno.</p>
+    </div>
+    <button class="btn btn-danger btn-sm fw-bold shadow-sm" id="btn-iniciar-fornada">🚀 Iniciar Fornada</button>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm border-0 mb-4 rounded-4">
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush" id="fila-pedidos">
+            {% for pedido in pedidos_aguardando %}
+            <div class="list-group-item p-3" id="pedido-card-{{ pedido.id }}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1 fw-bold text-dark">Pedido #{{ pedido.id }}</h6>
+                  <p class="mb-0 small text-muted">Status: <span class="badge bg-danger text-white">{{ pedido.get_status_display|upper }}</span></p>
+                </div>
+                
+                <!-- CORRIGIDO: Checagem aceita tanto a sigla do banco quanto a palavra por extenso -->
+                <div class="d-flex" style="gap: 10px;">
+                  {% if pedido.status == 'recebido' or pedido.status == 'REC' %}
+                    <span class="text-muted small">Aguardando...</span>
+                  {% elif pedido.status == 'forno' or pedido.status == 'FOR' or pedido.status == 'no_forno' %}
+                    <button class="btn btn-sm btn-outline-danger btn-status" data-id="{{ pedido.id }}" data-status="pronto">🍕 Pronto para Retirada</button>
+                  {% elif pedido.status == 'pronto' or pedido.status == 'PRN' %}
+                    <button class="btn btn-sm btn-danger btn-status" data-id="{{ pedido.id }}" data-status="concluido">✅ Entregar Pedido</button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="p-5 text-center">
+              <p class="text-muted">Nenhum pedido ativo em produção.</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'scripts/cozinha.js' %}"></script>
+{% endblock %}

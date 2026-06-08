@@ -73,6 +73,20 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    # ADICIONE AS LINHAS ABAIXO PARA TRAVAR A RESPOSTA APENAS EM JSON:
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
+
+
 # Internacionalização e Localização (RN - Brasil)
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Fortaleza'
@@ -89,3 +103,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Configuração padrão para chaves primárias
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Avisa ao Django qual é a sua página de login real
+LOGIN_URL = 'login'
+
+# Avisa para onde levar o usuário logo após ele logar
+LOGIN_REDIRECT_URL = 'home_cliente'

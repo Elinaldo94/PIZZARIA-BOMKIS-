@@ -1,109 +1,215 @@
-{% extends 'home/base.html' %} {% block content %}
+{% extends 'home/base.html' %} {% load static %} {% block title %}Meu Painel -
+Bomkisó{% endblock %} {% block content %}
 <div class="container mt-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Painel do Cliente</h2>
-    <div>
-      <a
-        href="{% url 'api_pizzas' %}"
-        class="btn btn-outline-primary"
-        target="_blank"
-        >Ver Cardápio</a
-      >
-      <button
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#novoPedidoModal"
-      >
-        + Novo Pedido
-      </button>
-    </div>
+    <h2 class="fw-bold">👋 Olá, {{ user.username }}!</h2>
   </div>
 
-  <h4 class="border-bottom pb-2">Meus Pedidos (CRUD)</h4>
-  <div class="table-responsive">
-    <table class="table table-hover mt-3">
-      <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Status</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for pedido in pedidos %}
-        <tr>
-          <td>#{{ pedido.id }}</td>
-          <td><span class="badge bg-info">{{ pedido.status|upper }}</span></td>
-          <td>
+  <h4 class="border-bottom pb-2 text-muted">Acompanhe seus Pedidos</h4>
+
+  <div class="row">
+    {% for pedido in pedidos %}
+    <div class="col-md-6 mb-3">
+      <div
+        class="card shadow-sm border-0 rounded-3"
+        id="pedido-{{ pedido.id }}"
+        data-pedido-id="{{ pedido.id }}"
+        data-status-ativo="{% if pedido.status != 'concluido' and pedido.status != 'cancelado' %}true{% else %}false{% endif %}"
+      >
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0 fw-bold">Pedido #{{ pedido.id }}</h5>
+            <span
+              class="badge bg-{% if pedido.status == 'cancelado' %}secondary{% else %}info text-dark{% endif %}"
+            >
+              {{ pedido.get_status_display|upper }}
+            </span>
+          </div>
+
+          {% if pedido.status != 'cancelado' and pedido.status != 'concluido' %}
+          <div class="progress mb-3" style="height: 10px">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+              role="progressbar"
+              style="width: {% if pedido.status == 'recebido' %}20%{% elif pedido.status == 'preparo' %}50%{% elif pedido.status == 'forno' %}80%{% else %}100%{% endif %}"
+            ></div>
+          </div>
+          {% endif %}
+
+          <p class="small text-muted mb-3">
+            🕗 Previsão de Retirada:
+            <strong>{{ pedido.horario_retirada_agendada|time:"H:i" }}</strong>
+          </p>
+
+          <div class="d-flex gap-2">
+            {% if pedido.status == 'recebido' %}
             <a
-              href="{% url 'editar_pedido' pedido.id %}"
-              class="btn btn-sm btn-warning"
+              href="{% url 'api_editar_pedido' pedido.id %}"
+              class="btn btn-sm btn-outline-warning w-50"
               >Editar</a
             >
-            <a
-              href="{% url 'cancelar_pedido' pedido.id %}"
-              class="btn btn-sm btn-danger"
-              onclick="return confirm('Deseja cancelar?');"
-              >Cancelar</a
+            <!-- CORRIGIDO: Vinculado ao método Pedidos.cancelar do JavaScript -->
+            <button
+              type="button"
+              onclick="Pedidos.cancelar('{{ pedido.id }}')"
+              class="btn btn-sm btn-outline-danger w-50"
             >
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="3" class="text-center text-muted">
-            Nenhum pedido realizado.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              Cancelar
+            </button>
+            {% else %}
+            <button class="btn btn-sm btn-light w-100" disabled>
+              Em produção - Bloqueado para edição
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <p class="text-muted">
+        Você ainda não fez nenhum pedido. Que tal uma pizza agora?
+      </p>
+    </div>
+    {% endfor %}
   </div>
 </div>
 
+<!-- Modal de Novo Pedido -->
 <div class="modal fade" id="novoPedidoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <form action="{% url 'novo_pedido' %}" method="POST" class="modal-content">
+    <!-- CORRIGIDO: Atribuído o ID correto mapeado no escopo do JavaScript -->
+    <form id="form-novo-pedido" class="modal-content border-0 shadow-lg">
       {% csrf_token %}
-      <div class="modal-header bg-success text-white">
-        <h5 class="modal-title">🍕 Fazer Novo Pedido</h5>
+      <div class="modal-header bg-danger text-white border-0">
+        <h5 class="modal-title fw-bold">🍕 Monte sua Pizza</h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close btn-close-white"
           data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+          style="
+            background: none;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+          "
+        >
+          X
+        </button>
       </div>
-
-      <div class="modal-body">
+      <div class="modal-body p-4">
+        <!-- 1. Sabor -->
         <div class="mb-3">
-          <label class="form-label">Escolha sua Pizza:</label>
-          <select name="pizza_id" class="form-select" required>
+          <label for="pizza_id" class="form-label fw-bold"
+            >1. Escolha o Sabor:</label
+          >
+          <select
+            name="pizza_id"
+            id="pizza_id"
+            class="form-select bg-light"
+            required
+          >
             <option value="" disabled selected>Selecione um sabor...</option>
             {% for pizza in pizzas %}
-            <option value="{{ pizza.id }}">
-              {{ pizza.nome }} - R$ {{ pizza.preco_m }}
-            </option>
+            <option value="{{ pizza.id }}">{{ pizza.nome }}</option>
             {% endfor %}
           </select>
         </div>
 
+        <!-- 2. Tamanho -->
         <div class="mb-3">
-          <label class="form-label">Forma de Pagamento:</label>
-          <select name="metodo_pagamento" class="form-select" required>
-            <option value="pix">PIX</option>
-            <option value="cartao">Cartão</option>
-            <option value="dinheiro">Dinheiro</option>
+          <label class="form-label fw-bold">2. Escolha o Tamanho:</label>
+          <div class="d-flex justify-content-between">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="tamanho"
+                value="P"
+                id="tamP"
+                required
+              />
+              <label class="form-check-label" for="tamP">Pequena</label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="tamanho"
+                value="M"
+                id="tamM"
+                checked
+                required
+              />
+              <label class="form-check-label" for="tamM">Média</label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="tamanho"
+                value="G"
+                id="tamG"
+                required
+              />
+              <label class="form-check-label" for="tamG">Grande</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Horário -->
+        <div class="mb-3">
+          <label for="horario_retirada" class="form-label fw-bold"
+            >3. Horário de Retirada (Agendamento):</label
+          >
+          <input
+            type="time"
+            name="horario_retirada"
+            id="horario_retirada"
+            class="form-control bg-light"
+            required
+          />
+        </div>
+
+        <!-- 4. Pagamento -->
+        <div class="mb-3">
+          <label for="metodo_pagamento" class="form-label fw-bold"
+            >4. Pagamento:</label
+          >
+          <select
+            name="metodo_pagamento"
+            id="metodo_pagamento"
+            class="form-select bg-light"
+            required
+          >
+            <option value="pix" selected>PIX Online</option>
+            <option value="online">Cartão (Online)</option>
+            <option value="dinheiro">Dinheiro na Retirada</option>
           </select>
         </div>
       </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancelar
+      <div class="modal-footer bg-light border-0">
+        <button
+          type="submit"
+          class="btn btn-danger px-4 fw-bold w-100"
+          style="padding: 10px"
+        >
+          Confirmar Pedido
         </button>
-        <button type="submit" class="btn btn-success">Confirmar Pedido</button>
       </div>
     </form>
   </div>
 </div>
+{% endblock %} {% block extra_js %}
+<!-- Configuração IHC: Garante que o fetch envie o token CSRF necessário pelo Django -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const csrfToken = document.querySelector(
+      "[name=csrfmiddlewaretoken]",
+    ).value;
+    window.DjangoCSRF = csrfToken;
+  });
+</script>
+<script src="{% static 'scripts/pedidos.js' %}"></script>
 {% endblock %}

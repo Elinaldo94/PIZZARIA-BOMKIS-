@@ -1,20 +1,410 @@
-/* static/css/style.css */
+/* --- 1. VARIÁVEIS E DIRETRIZES GLOBAIS (UI) --- */
+:root {
+  --pizzaria-red: #ce1212;
+  --pizzaria-dark: #1a1a1a;
+  --pizzaria-light: #f8f9fa;
+  --pizzaria-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --transition: 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  background-color: #f8f9fa;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--pizzaria-light);
+  font-family: "Poppins", "Segoe UI", Roboto, sans-serif;
+  color: var(--pizzaria-dark);
+  line-height: 1.6;
+  min-height: 100vh;
 }
 
+/* --- 2. LAYOUT EM GRID COMPATÍVEL --- */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.d-flex {
+  display: flex;
+  align-items: center;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.text-center {
+  text-align: center;
+}
+.text-start {
+  text-align: left;
+}
+.text-muted {
+  color: #6c757d !important;
+}
+.fw-bold {
+  font-weight: 700;
+}
+.small {
+  font-size: 0.85rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-4 {
+  margin-top: 1.5rem;
+}
+.p-0 {
+  padding: 0 !important;
+}
+.p-4 {
+  padding: 1.5rem !important;
+}
+.pt-3 {
+  padding-top: 1rem !important;
+}
+.pb-2 {
+  padding-bottom: 0.5rem !important;
+}
+.ps-4 {
+  padding-left: 1.5rem !important;
+}
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.py-3 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.py-5 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+.w-50 {
+  width: 50%;
+}
+.w-100 {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.col-md-3,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-12 {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* Força o alinhamento central absoluto na tela de Login */
+.row.justify-content-center {
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+}
+
+/* --- 3. NAVEGAÇÃO (NAVBAR) --- */
+.navbar {
+  background-color: var(--pizzaria-dark);
+  padding: 0.8rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--pizzaria-red);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-brand {
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: white;
+  letter-spacing: -1px;
+}
+
+.navbar-nav {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.nav-link {
+  color: #efefef;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.nav-link:hover {
+  color: var(--pizzaria-red);
+}
+.text-light {
+  color: #f8f9fa !important;
+}
+.me-3 {
+  margin-right: 1rem !important;
+}
+
+/* --- 4. COMPONENTES VISUAIS (CARDS, BADGES E PROGRESSO) --- */
 .card {
-  border-radius: 15px;
-}
-
-.btn-danger {
-  background-color: #d9534f;
+  background: white;
   border: none;
-  transition: 0.3s;
+  border-radius: 15px;
+  box-shadow: var(--pizzaria-shadow);
+  transition: var(--transition);
+  overflow: hidden;
+  margin-bottom: 20px;
 }
 
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+.card-header {
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+}
+.card-header.bg-danger {
+  background-color: var(--pizzaria-red);
+  color: white;
+}
+.card-header.bg-white {
+  background-color: white;
+}
+.card-header.bg-dark {
+  background-color: var(--pizzaria-dark);
+  color: white;
+}
+.card-footer {
+  background: #fdfdfd;
+  padding: 1rem;
+  border-top: 1px solid #eee;
+}
+.card-footer.bg-light {
+  background-color: #f8f9fa;
+}
+
+/* Barras de Rastreio Operacionais */
+.progress {
+  display: flex;
+  height: 12px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  background-color: #e9ecef;
+  border-radius: 6px;
+}
+
+.progress-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  transition: width 0.6s ease;
+}
+
+.bg-success {
+  background-color: #28a745 !important;
+}
+.bg-danger {
+  background-color: var(--pizzaria-red) !important;
+}
+.bg-primary {
+  background-color: #007bff !important;
+}
+.bg-dark {
+  background-color: var(--pizzaria-dark) !important;
+}
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+.border-0 {
+  border: 0 !important;
+}
+.rounded-4 {
+  border-radius: 15px !important;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.4em 0.8em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 6px;
+}
+
+.bg-light {
+  background-color: #f8f9fa;
+}
+.text-dark {
+  color: #343a40;
+}
+.border {
+  border: 1px solid #dee2e6 !important;
+}
+
+/* --- 5. TABELAS, FORMULÁRIOS E BOTÕES --- */
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+}
+.table th {
+  padding: 12px;
+  font-weight: 600;
+}
+.table td {
+  padding: 12px;
+  border-top: 1px solid #dee2e6;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.table-dark {
+  background-color: var(--pizzaria-dark);
+  color: white;
+}
+.table-light {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.form-control,
+.form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 0.95rem;
+}
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+.border-0 {
+  border: 0 !important;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+
+.btn-sm {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+}
+.btn-danger {
+  background-color: var(--pizzaria-red);
+  color: white;
+}
 .btn-danger:hover {
-  background-color: #c9302c;
-  transform: scale(1.02);
+  background-color: #b00e0e;
+  transform: translateY(-1px);
+}
+.btn-outline-danger {
+  background: transparent;
+  border-color: var(--pizzaria-red);
+  color: var(--pizzaria-red);
+}
+.btn-outline-danger:hover {
+  background: var(--pizzaria-red);
+  color: white;
+}
+.btn-light {
+  background-color: #e2e6ea;
+  color: #333;
+}
+
+.alert {
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border-left: 5px solid var(--pizzaria-red);
+  background-color: #fff5f5;
+}
+
+/* --- 6. MEDIA QUERIES --- */
+@media (min-width: 768px) {
+  .col-md-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  .col-md-4 {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+  }
+  .col-md-5 {
+    flex: 0 0 41.666%;
+    max-width: 41.666%;
+  }
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .col-md-7 {
+    flex: 0 0 58.333%;
+    max-width: 58.333%;
+  }
 }

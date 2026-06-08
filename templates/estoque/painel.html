@@ -1,46 +1,94 @@
-{% extends 'home/base.html' %} {% block title %}Controle de Estoque - Bomkisó{%
-endblock %} {% block content %}
-<div class="pt-3 pb-2 mb-3 border-bottom">
-  <h2 class="text-dark">📦 Painel de Insumos</h2>
-  <p class="text-muted">
-    Acompanhe a quantidade de ingredientes em tempo real.
-  </p>
-</div>
+{% extends 'home/base.html' %}
+{% load static %}
 
-<div class="card shadow border-0">
-  <div class="card-body p-0">
-    <table class="table table-striped table-hover mb-0 align-middle">
-      <thead class="table-danger">
-        <tr>
-          <th>Insumo</th>
-          <th>Qtd. Atual</th>
-          <th>Unidade</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for insumo in insumos %}
-        <tr>
-          <td><strong>{{ insumo.nome }}</strong></td>
-          <td>{{ insumo.quantidade_atual }}</td>
-          <td>{{ insumo.unidade_medida }}</td>
-          <td>
-            {% if insumo.quantidade_atual <= insumo.nivel_critico %}
-            <span class="badge bg-danger">⚠️ Reposição Urgente</span>
-            {% else %}
-            <span class="badge bg-success">✅ Normal</span>
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" class="text-center">
-            Nenhum insumo cadastrado no sistema.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+{% block title %}Estoque - Pizzaria Bomkisó{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark">📋 Painel de Insumos</h2>
+      <p class="text-muted small">Acompanhe a quantidade de ingredientes em tempo real.</p>
+    </div>
+    <!-- ID adicionado para o JavaScript escutar o clique -->
+    <button id="btn-abrir-formulario" class="btn btn-danger fw-bold shadow-sm">REGISTRAR COMPRA</button>
+  </div>
+
+  <!-- Tabela de Insumos -->
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Insumo</th>
+              <th>Qtd. Atual</th>
+              <th>Unidade</th>
+              <th>Nível Crítico</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for insumo in insumos %}
+            <tr>
+              <td class="fw-bold">{{ insumo.nome }}</td>
+              <td class="fw-bold">{{ insumo.quantidade_atual }}</td>
+              <td><span class="badge bg-light text-dark border">{{ insumo.unidade }}</span></td>
+              <td class="text-muted">{{ insumo.nivel_critico }}</td>
+              <td>
+                {% if insumo.quantidade_atual <= insumo.nivel_critico %}
+                <span class="badge bg-danger text-white">Repor Urgente</span>
+                {% else %}
+                <span class="badge bg-success text-white">Normal</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">Nenhum insumo cadastrado.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário de Compra (Começa escondido via CSS: display:none) -->
+  <div id="painel-formulario-compra" class="card border-0 mt-4 rounded-4 shadow-lg" style="display: none; border-top: 5px solid var(--pizzaria-red);">
+    <div class="card-header bg-danger text-white fw-bold">
+      🚩 Registrar Entrada de Insumo
+    </div>
+    <div class="card-body">
+      <form id="form-registrar-compra">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="insumo_id" class="form-label fw-bold">Selecione o Insumo</label>
+          <select name="insumo_id" id="insumo_id" class="form-select bg-light" required>
+            <option value="" disabled selected>Escolha um ingrediente...</option>
+            {% for insumo in insumos %}
+            <option value="{{ insumo.id }}">{{ insumo.nome }} (Estoque: {{ insumo.quantidade_atual }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="quantidade_comprada" class="form-label fw-bold">Quantidade Comprada</label>
+          <input type="number" step="0.01" name="quantidade" id="quantidade_comprada" class="form-control bg-light" placeholder="0.00" required />
+          <small class="text-muted d-block mt-1">O saldo será somado automaticamente ao estoque atual.</small>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4" style="gap: 15px;">
+          <!-- IDs mapeados para o JavaScript -->
+          <button type="button" id="btn-cancelar-compra" class="btn btn-light w-50">CANCELAR</button>
+          <button type="submit" class="btn btn-danger w-50">CONFIRMAR ENTRADA</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'scripts/estoque.js' %}"></script>
 {% endblock %}

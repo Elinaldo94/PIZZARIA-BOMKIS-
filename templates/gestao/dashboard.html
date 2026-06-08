@@ -1,71 +1,97 @@
-{% extends 'home/base.html' %} {% block title %}Dashboard Gerencial - Bomkisó{%
-endblock %} {% block content %}
-<div
-  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
->
-  <h1 class="h2 text-danger">📊 Indicadores de Gestão</h1>
-</div>
+{% extends 'home/base.html' %}
 
-<div class="row text-center mb-4">
-  <div class="col-md-4 mb-3">
-    <div class="card bg-danger text-white shadow">
-      <div class="card-body">
-        <h5 class="card-title">Total de Pedidos</h5>
-        <h2 class="display-4 fw-bold">{{ total_pedidos }}</h2>
-      </div>
-    </div>
-  </div>
+{% block title %}Dashboard Gerencial - Bomkisó{% endblock %}
 
-  <div class="col-md-8 mb-3">
-    <div class="card shadow">
-      <div class="card-body">
-        <h5 class="card-title border-bottom pb-2">Status dos Pedidos Atual</h5>
-        <div class="d-flex justify-content-around mt-3">
-          {% for item in resumo_status %}
-          <div>
-            <span class="badge bg-secondary p-2">{{ item.status|upper }}</span>
-            <h4 class="mt-2">{{ item.total }}</h4>
-          </div>
-          {% empty %}
-          <p class="text-muted">Nenhum pedido registrado hoje.</p>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom animate__animated animate__fadeIn">
+  <h1 class="h2 text-danger fw-bold">📊 Indicadores de Gestão & BI</h1>
 </div>
 
 <div class="row">
-  <div class="col-md-12">
-    <div class="card shadow mb-4">
-      <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">
-          🔥 Ranking: Pizzas Mais Vendidas (Diferencial Estratégico)
-        </h5>
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0 text-white bg-dark">
+      <div class="card-body">
+        <h5 class="card-title text-muted small text-uppercase fw-bold">Faturamento Bruto</h5>
+        <h2 class="fw-bold mt-2">R$ {{ faturamento|default:0|floatformat:2 }}</h2>
+        <p class="small text-success mt-2">● Pedidos Concluídos</p>
       </div>
-      <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="card-title text-muted small text-uppercase fw-bold">Lucro Estimado (Margem 40%)</h5>
+        <h2 class="fw-bold text-danger mt-2">R$ {{ lucro_projetado|default:0|floatformat:2 }}</h2>
+        <p class="small text-muted mt-2">Projeção Operacional Direta</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="card-title text-muted small text-uppercase fw-bold">Volume Total de Pedidos</h5>
+        <h2 class="fw-bold mt-2">{{ total_pedidos|default:0 }}</h2>
+        <p class="small text-muted mt-2">Contagem Geral no Sistema</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold text-dark border-0 pt-3">
+        🍕 Top 5 Pizzas Mais Vendidas
+      </div>
+      <div class="card-body">
+        <table class="table table-striped table-hover">
+          <thead>
             <tr>
               <th>Sabor</th>
-              <th>Categoria</th>
-              <th class="text-center">Qtd. Pedidos</th>
+              <th>Quantidade Vendida</th>
             </tr>
           </thead>
           <tbody>
             {% for pizza in pizzas_populares %}
             <tr>
-              <td><strong>{{ pizza.nome }}</strong></td>
-              <td>{{ pizza.categoria.nome }}</td>
-              <td class="text-center">
-                <span class="badge bg-success">{{ pizza.qtd_vendas }}</span>
-              </td>
+              <td class="fw-bold">{{ pizza.nome }}</td>
+              <td><span class="badge bg-danger text-white">{{ pizza.vendas }}</span></td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="3" class="text-center">
-                Nenhum dado de venda disponível.
-              </td>
+              <td colspan="2" class="text-center text-muted small">Nenhum dado computado ainda.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white fw-bold text-dark border-0 pt-3">
+        ⚙️ Status Operacional em Tempo Real
+      </div>
+      <div class="card-body">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Fase da Operação</th>
+              <th>Pedidos Ativos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for status in resumo_status %}
+            <tr>
+              <td class="text-uppercase fw-bold">{{ status.status }}</td>
+              <td><span class="badge bg-dark text-white">{{ status.total }}</span></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="2" class="text-center text-muted small">Sem pedidos ativos no momento.</td>
             </tr>
             {% endfor %}
           </tbody>

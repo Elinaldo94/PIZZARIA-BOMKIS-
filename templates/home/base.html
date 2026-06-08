@@ -3,29 +3,58 @@
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Pizzaria Bomkisó{% endblock %}</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
   </head>
   <body>
-    <div class="container mt-4">
-      {% if messages %} {% for message in messages %}
-      <div
-        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
-        role="alert"
-      >
-        {{ message }}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-        ></button>
+    <header class="navbar">
+      <a class="navbar-brand" href="{% url 'home_cliente' %}">
+        <span class="text-danger">BOM</span>KISÓ
+      </a>
+
+      <nav id="menu-operacional" style="display: none">
+        <ul class="navbar-nav">
+          <li>
+            <a class="nav-link" href="{% url 'cardapio_visual' %}"
+              >🍕 Cardápio</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="{% url 'painel_producao' %}"
+              >👨‍🍳 Produção</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="{% url 'painel_preparo' %}">📦 Estoque</a>
+          </li>
+          <li>
+            <a class="nav-link" href="{% url 'dashboard' %}">📊 Gestão</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="d-flex">
+        <div id="auth-logged-in" style="display: none">
+          <span class="text-light" style="color: white; margin-right: 15px">
+            Olá, <span id="nav-username"></span>
+          </span>
+          <a href="#" id="btn-logout" class="btn btn-outline-danger btn-sm"
+            >Sair</a
+          >
+        </div>
       </div>
-      {% endfor %} {% endif %} {% block content %} {% endblock %}
+    </header>
+
+    <div class="container">
+      {% if messages %} {% for message in messages %}
+      <div class="alert">{{ message }}</div>
+      {% endfor %} {% endif %}
+
+      <main>{% block content %}{% endblock %}</main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'scripts/auth.js' %}"></script>
+    {% block extra_js %}{% endblock %}
   </body>
 </html>
