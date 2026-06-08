@@ -10,7 +10,8 @@ SECRET_KEY = 'django-insecure-dtp3t4-ptjc+7h_waw#(mcmi(vlv&_#o8ihg0&$ra2=p1e9--_
 # SEGURANÇA: Mantenha o DEBUG como True apenas para desenvolvimento
 DEBUG = True
 
-ALLOWED_HOSTS = ['://onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
+
 
 # Definição dos Aplicativos
 INSTALLED_APPS = [
